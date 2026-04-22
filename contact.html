@@ -79,13 +79,14 @@
                 <input type="tel" class="phone" name="phone" data-placeholder-en="Phone Number"
                     data-placeholder-ar="رقم الهاتف" placeholder="رقم الهاتف" pattern="[0-9]{10,}"
                     title="Please enter a valid phone number" required>
-                <input type="email" class="email" name="email" data-placeholder-en="Email" data-placeholder-ar="الايميل"
-                    placeholder="الايميل">
-                <textarea class="note" data-placeholder-en="Your Message" data-placeholder-ar="رسالتك"
-                    placeholder="رسالتك"></textarea>
-                <button type="submit" data-en="Send Message" data-ar="إرسال الرسالة" class="send-btn">إرسال
+                <input type="email" name="email" class="email" data-placeholder-en="Email" data-placeholder-ar="الايميل"
+                    required>
+                <textarea name="message" class="note" data-placeholder-en="Your Message"
+                    data-placeholder-ar="رسالتك"></textarea>
+                <button type="submit" data-en="Send Message" data-ar="إرسال الرسالة" class="send-btn">ارسال
                     الرسالة</button>
             </form>
+
         </div>
     </section>
 
