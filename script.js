@@ -62,57 +62,42 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   });
 });
 
-/* =========================
-   ✅ WEB3FORMS FIXED FORM
-========================= */
-
 const form = document.getElementById('form');
-const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
+const submitBtn = form.querySelector('button[type="submit"]');
 
-if (form) {
-  form.addEventListener('submit', async (e) => {
+form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const formData = new FormData(form);
     formData.append("access_key", "393d754f-0028-4a51-bc21-b230ba5cb8d0");
 
-    const originalText = submitBtn ? submitBtn.textContent : "";
+    const originalText = submitBtn.textContent;
 
-    if (submitBtn) {
-      submitBtn.textContent = currentLang === 'ar' ? "جاري الإرسال..." : "Sending...";
-      submitBtn.disabled = true;
-    }
+    submitBtn.textContent = "Sending...";
+    submitBtn.disabled = true;
 
     try {
-      const response = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        body: formData
-      });
+        const response = await fetch("https://api.web3forms.com/submit", {
+            method: "POST",
+            body: formData
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      if (data.success) {
-        alert(currentLang === 'ar'
-          ? "تم إرسال الرسالة بنجاح!"
-          : "Your message has been sent successfully!");
-
-        form.reset();
-      } else {
-        alert(data.message || "Error sending message");
-      }
+        if (response.ok) {
+            alert("Success! Your message has been sent.");
+            form.reset();
+        } else {
+            alert("Error: " + data.message);
+        }
 
     } catch (error) {
-      alert(currentLang === 'ar'
-        ? "حصل خطأ، حاول تاني"
-        : "Something went wrong. Please try again.");
+        alert("Something went wrong. Please try again.");
+    } finally {
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
     }
-
-    if (submitBtn) {
-      submitBtn.textContent = originalText;
-      submitBtn.disabled = false;
-    }
-  });
-}
+});
 
 // Header scroll effect
 window.addEventListener('scroll', () => {
