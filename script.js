@@ -68,13 +68,41 @@ document.querySelectorAll('a[href^=\"#\"]').forEach(anchor => {
   });
 });
 
-document.addEventListener('submit', function(e) {
-  if (e.target.matches('form')) {
+const form = document.getElementById('form');
+const submitBtn = form.querySelector('button[type="submit"]');
+
+form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const msg = currentLang === 'ar' ? 'شكراً لرسالتك! سنرد عليك قريباً.' : 'Thank you! We will reply soon.';
-    alert(msg);
-    e.target.reset();
-  }
+
+    const formData = new FormData(form);
+    formData.append("access_key", "393d754f-0028-4a51-bc21-b230ba5cb8d0");
+
+    const originalText = submitBtn.textContent;
+
+    submitBtn.textContent = "Sending...";
+    submitBtn.disabled = true;
+
+    try {
+        const response = await fetch("https://api.web3forms.com/submit", {
+            method: "POST",
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert("Success! Your message has been sent.");
+            form.reset();
+        } else {
+            alert("Error: " + data.message);
+        }
+
+    } catch (error) {
+        alert("Something went wrong. Please try again.");
+    } finally {
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    }
 });
 
 // Header scroll effect
