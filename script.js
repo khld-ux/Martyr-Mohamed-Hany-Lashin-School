@@ -81,8 +81,8 @@ function validateForm(form) {
     }
   });
   // Email validation
-  const email = form.querySelector('input[type=\"email\"]');
-  if (email && !/^[^@\\s]+@[^@\\s\\.]\\+[^@\\.+]$/.test(email.value)) {
+  const email = form.querySelector('input[type="email"]');
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
     valid = false;
     email.style.borderColor = '#e74c3c';
   }
