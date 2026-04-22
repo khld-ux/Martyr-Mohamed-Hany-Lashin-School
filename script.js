@@ -3,9 +3,9 @@ let currentLang = localStorage.getItem('lang') || 'ar';
 
 const langToggleBtn = document.getElementById('langToggle');
 const navMenu = document.querySelector('nav ul');
-const hamburger = null; // Will add in HTML/CSS later
+const hamburger = null;
 
-// Gallery modal elements (will create dynamically)
+// Gallery modal elements
 let galleryModal, modalImg, prevBtn, nextBtn, galleryImages = [];
 
 // Update text and attributes
@@ -14,29 +14,24 @@ function updateText() {
   document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
   document.body.classList.toggle('lang-ar', currentLang === 'ar');
 
-  // Update all bilingual elements
   document.querySelectorAll('[data-en][data-ar]').forEach(el => {
     el.textContent = el.getAttribute(`data-${currentLang}`);
   });
 
-  // Update title correctly
   const titleEl = document.querySelector('title');
   if (titleEl && titleEl.hasAttribute(`data-${currentLang}`)) {
     titleEl.textContent = titleEl.getAttribute(`data-${currentLang}`);
   }
 
-  // Update placeholders
   document.querySelectorAll('[data-placeholder-en][data-placeholder-ar]').forEach(el => {
     el.placeholder = el.getAttribute(`data-placeholder-${currentLang}`);
   });
 
-  // Update button texts
   if (langToggleBtn) {
     langToggleBtn.textContent = currentLang === 'en' ? 'ع' : 'EN';
   }
 
-  // Update form submit button
-  document.querySelectorAll('button[type=\"submit\"]').forEach(btn => {
+  document.querySelectorAll('button[type="submit"]').forEach(btn => {
     if (btn.hasAttribute(`data-${currentLang}`)) {
       btn.textContent = btn.getAttribute(`data-${currentLang}`);
     }
@@ -49,13 +44,12 @@ function toggleLang() {
   updateText();
 }
 
-// Mobile nav toggle
 function toggleMobileNav() {
   navMenu.classList.toggle('active');
 }
 
 // Smooth scrolling
-document.querySelectorAll('a[href^=\"#\"]').forEach(anchor => {
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   anchor.addEventListener('click', function (e) {
     e.preventDefault();
     const target = document.querySelector(this.getAttribute('href'));
@@ -68,50 +62,63 @@ document.querySelectorAll('a[href^=\"#\"]').forEach(anchor => {
   });
 });
 
-const form = document.getElementById('form');
-const submitBtn = form.querySelector('button[type="submit"]');
+/* =========================
+   ✅ WEB3FORMS FIXED FORM
+========================= */
 
-form.addEventListener('submit', async (e) => {
+const form = document.getElementById('form');
+const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
+
+if (form) {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const formData = new FormData(form);
     formData.append("access_key", "393d754f-0028-4a51-bc21-b230ba5cb8d0");
 
-    const originalText = submitBtn.textContent;
+    const originalText = submitBtn ? submitBtn.textContent : "";
 
-    submitBtn.textContent = "Sending...";
-    submitBtn.disabled = true;
+    if (submitBtn) {
+      submitBtn.textContent = currentLang === 'ar' ? "جاري الإرسال..." : "Sending...";
+      submitBtn.disabled = true;
+    }
 
     try {
-        const response = await fetch("https://api.web3forms.com/submit", {
-            method: "POST",
-            body: formData
-        });
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formData
+      });
 
-        const data = await response.json();
+      const data = await response.json();
 
-        if (response.ok) {
-            alert("Success! Your message has been sent.");
-            form.reset();
-        } else {
-            alert("Error: " + data.message);
-        }
+      if (data.success) {
+        alert(currentLang === 'ar'
+          ? "تم إرسال الرسالة بنجاح!"
+          : "Your message has been sent successfully!");
+
+        form.reset();
+      } else {
+        alert(data.message || "Error sending message");
+      }
 
     } catch (error) {
-        alert("Something went wrong. Please try again.");
-    } finally {
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
+      alert(currentLang === 'ar'
+        ? "حصل خطأ، حاول تاني"
+        : "Something went wrong. Please try again.");
     }
-});
+
+    if (submitBtn) {
+      submitBtn.textContent = originalText;
+      submitBtn.disabled = false;
+    }
+  });
+}
 
 // Header scroll effect
 window.addEventListener('scroll', () => {
   const header = document.querySelector('header');
-  if (window.scrollY > 100) {
-    header.classList.add('scrolled');
-  } else {
-    header.classList.remove('scrolled');
+  if (header) {
+    header.classList.toggle('scrolled', window.scrollY > 100);
   }
 });
 
@@ -134,53 +141,39 @@ let currentGalleryIndex = 0;
 function nextGallery() {
   currentGalleryIndex = (currentGalleryIndex + 1) % galleryImages.length;
   modalImg.src = galleryImages[currentGalleryIndex].src;
-  modalImg.alt = galleryImages[currentGalleryIndex].alt;
 }
 
 function prevGallery() {
   currentGalleryIndex = (currentGalleryIndex - 1 + galleryImages.length) % galleryImages.length;
   modalImg.src = galleryImages[currentGalleryIndex].src;
-  modalImg.alt = galleryImages[currentGalleryIndex].alt;
 }
 
-// Scroll fade-in animation
+// Scroll animation
 function initScrollAnimations() {
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('fade-in');
-      }
+      if (entry.isIntersecting) entry.target.classList.add('fade-in');
     });
   });
+
   document.querySelectorAll('.fade-section, .gallery-item').forEach(el => {
     observer.observe(el);
   });
 }
 
-// Event listeners
+// Events
 document.addEventListener('click', (e) => {
-  if (e.target.id === 'langToggle') {
-    toggleLang();
-  } else if (e.target.matches('.gallery-item img')) {
+  if (e.target.id === 'langToggle') toggleLang();
+
+  if (e.target.matches('.gallery-item img')) {
     const index = Array.from(galleryImages).indexOf(e.target);
     openGallery(index);
-  } else if (e.target.classList.contains('modal-close') || e.target === galleryModal) {
+  }
+
+  if (e.target.classList.contains('modal-close') || e.target === galleryModal) {
     closeGallery();
   }
-});
 
-// Bottom nav active state
-function updateActiveNav() {
-  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-  document.querySelectorAll('.bottom-nav a').forEach(link => {
-    link.classList.remove('active');
-    if (link.getAttribute('href') === currentPage) {
-      link.classList.add('active');
-    }
-  });
-}
-
-document.addEventListener('click', (e) => {
   if (e.target.matches('.gallery-nav-next')) nextGallery();
   if (e.target.matches('.gallery-nav-prev')) prevGallery();
 });
@@ -191,13 +184,22 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowLeft') prevGallery();
 });
 
+// Active nav
+function updateActiveNav() {
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+
+  document.querySelectorAll('.bottom-nav a').forEach(link => {
+    link.classList.toggle('active', link.getAttribute('href') === currentPage);
+  });
+}
+
 // Init
 document.addEventListener('DOMContentLoaded', () => {
   updateText();
   updateActiveNav();
-  // Collect gallery images
+
   galleryImages = document.querySelectorAll('.gallery-item img');
-  // Create modal if gallery exists
+
   if (galleryImages.length > 0) {
     galleryModal = document.createElement('div');
     galleryModal.className = 'gallery-modal';
@@ -212,5 +214,6 @@ document.addEventListener('DOMContentLoaded', () => {
     prevBtn = galleryModal.querySelector('.gallery-nav-prev');
     nextBtn = galleryModal.querySelector('.gallery-nav-next');
   }
+
   initScrollAnimations();
 });
