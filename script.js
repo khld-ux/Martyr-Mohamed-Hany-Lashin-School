@@ -1,4 +1,3 @@
-// Bilingual functionality - default Arabic
 let currentLang = localStorage.getItem('lang') || 'ar';
 
 const langToggleBtn = document.getElementById('langToggle');
