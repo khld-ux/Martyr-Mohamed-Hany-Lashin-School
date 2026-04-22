@@ -68,37 +68,12 @@ document.querySelectorAll('a[href^=\"#\"]').forEach(anchor => {
   });
 });
 
-// Enhanced form submission with validation
-function validateForm(form) {
-  const inputs = form.querySelectorAll('input[required], textarea[required]');
-  let valid = true;
-  inputs.forEach(input => {
-    if (!input.value.trim()) {
-      valid = false;
-      input.style.borderColor = '#e74c3c';
-    } else {
-      input.style.borderColor = '#ddd';
-    }
-  });
-  // Email validation
-  const email = form.querySelector('input[type="email"]');
-  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
-    valid = false;
-    email.style.borderColor = '#e74c3c';
-  }
-  return valid;
-}
-
 document.addEventListener('submit', function(e) {
   if (e.target.matches('form')) {
     e.preventDefault();
-    if (validateForm(e.target)) {
-      const msg = currentLang === 'ar' ? 'شكراً لرسالتك! سنرد عليك قريباً.' : 'Thank you! We will reply soon.';
-      alert(msg);
-      e.target.reset();
-    } else {
-      alert(currentLang === 'ar' ? 'يرجى ملء جميع الحقول بشكل صحيح' : 'Please fill all fields correctly');
-    }
+    const msg = currentLang === 'ar' ? 'شكراً لرسالتك! سنرد عليك قريباً.' : 'Thank you! We will reply soon.';
+    alert(msg);
+    e.target.reset();
   }
 });
 
